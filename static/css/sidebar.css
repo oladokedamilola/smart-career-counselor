@@ -1,0 +1,227 @@
+/* Base Sidebar Styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 260px;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  transition: all 0.3s ease;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Collapsed State */
+.sidebar.collapsed {
+  width: 64px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.sidebar-header img {
+  max-height: 40px;
+  max-width: 100%;
+}
+
+.toggler {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Always show togglers even in collapsed state */
+.sidebar.collapsed .sidebar-toggler,
+.sidebar.collapsed .menu-toggler {
+  display: inline-block;
+}
+
+
+/* Toggle icon rotation when collapsed */
+.sidebar.collapsed .sidebar-toggler span {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+/* Menu Toggler Animation */
+.menu-toggler span {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate icon when active */
+.sidebar.menu-active .menu-toggler span {
+  transform: rotate(180deg);
+}
+
+.sidebar-nav {
+  padding: 0 12px;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #f0f0f0;
+}
+
+.nav-icon {
+  font-size: 22px;
+}
+
+/* Tooltips */
+.nav-tooltip {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  background: #333;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
+/* Show tooltip when collapsed */
+.sidebar.collapsed .nav-tooltip {
+  display: block;
+}
+
+/* Hide labels and other text when collapsed */
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .chat-history-title,
+.sidebar.collapsed .chat-session-label,
+.sidebar.collapsed .sidebar-chat-history p,
+.sidebar.collapsed .sidebar-quick-links,
+.sidebar.collapsed .secondary-nav .nav-label {
+  display: none !important;
+}
+
+/* Chat History Section */
+.sidebar-chat-history {
+  margin-top: 20px;
+}
+
+.chat-history-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.chat-session-label {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
+
+.chat-session-label.active-session {
+  background-color: #f9f9f9;
+  border-color: #ccc;
+}
+
+.no-chats {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Always show the sidebar toggle */
+.sidebar-toggler {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Ensure it is visible in collapsed mode */
+.sidebar.collapsed .sidebar-toggler {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* Optional: give it a small background to make it visible */
+.sidebar-toggler:hover {
+  background-color: #f0f0f0;
+  border-radius: 50%;
+}
+
+/* Responsive Behavior */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out, height 0.3s ease;
+    position: fixed;
+    width: 100%;
+    height: 56px;
+    overflow: hidden;
+    background-color: #fff;
+  }
+
+  .sidebar.menu-active {
+    transform: translateX(0);
+    height: 100vh;
+  }
+
+  .sidebar.collapsed {
+    height: 56px;
+    width: 100%;
+  }
+
+  .nav-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-item {
+    margin-bottom: 6px;
+  }
+
+  .sidebar-header {
+    padding: 12px;
+  }
+
+  .sidebar-nav {
+    padding: 0 12px;
+  }
+
+  .sidebar-chat-history,
+  .sidebar-quick-links,
+  .secondary-nav {
+    margin-top: 16px;
+  }
+}

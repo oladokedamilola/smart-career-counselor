@@ -1,0 +1,526 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}
+  {{ current_chat.title|default:"New Chat" }}
+{% endblock %}
+
+
+
+{% block sidebar %}
+  {% include 'sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<style>
+  .message-row.user {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .message-row.bot {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .message-bubble {
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 12px;
+    background-color: #f0f0f0;
+    position: relative;
+  }
+
+  .user-message {
+    background-color: #daf0ff;
+    text-align: right;
+  }
+
+  .bot-message {
+    background-color: #eeeeee;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .message-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .message-row.bot {
+    justify-content: flex-start;
+  }
+
+  .message-row.user .message-bubble {
+    background-color: #d1eaff;
+    margin-left: 10px;
+  }
+
+  .message-row.bot .message-bubble {
+    background-color: #e6e6e6;
+    margin-right: 10px;
+  }
+
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 2rem);
+    margin: 1rem;
+    overflow: hidden;
+    background-color: #f9fafb;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .chat-header {
+    background-color: #4a90e2;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    border-bottom: 1px solid #cbd5e0;
+    text-align: center;
+  }
+
+  #chat-window {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background: #f9fafb;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #chat-window.empty-chat {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #6c757d;
+    font-size: 1.1rem;
+  }
+
+  .message-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .user-message,
+  .bot-message {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 1rem;
+    word-wrap: break-word;
+    position: relative;
+  }
+
+  .user-message {
+    background-color: #4a90e2;
+    color: #fff;
+    align-self: flex-end;
+  }
+
+  .bot-message {
+    background-color: #fff;
+    color: #333;
+    align-self: flex-start;
+    border: 1px solid #dee2e6;
+  }
+
+  #chat-form {
+    background-color: #fff;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #dee2e6;
+  }
+
+  .form-container {
+    display: flex;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  #chat-input {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    flex-grow: 1;
+    border: 1px solid #dee2e6;
+  }
+
+  .send-btn {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+    color: #fff;
+    padding: 0.65rem 1.25rem;
+    margin-left: 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+  }
+
+  .send-btn:hover {
+    background-color: #357ab8;
+    border-color: #357ab8;
+  }
+
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    height: 20px;
+    margin-left: 10px;
+  }
+
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #a0a0a0;
+    border-radius: 50%;
+    margin: 0 2px;
+    opacity: 0.4;
+  }
+
+  .typing-dot:nth-child(1) {
+    animation: typingAnimation 1.4s infinite;
+  }
+
+  .typing-dot:nth-child(2) {
+    animation: typingAnimation 1.4s infinite 0.2s;
+  }
+
+  .typing-dot:nth-child(3) {
+    animation: typingAnimation 1.4s infinite 0.4s;
+  }
+
+  @keyframes typingAnimation {
+    0%,
+    60%,
+    100% {
+      opacity: 0.4;
+      transform: translateY(0);
+    }
+
+    30% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
+
+  /* 🌟 New: Action Icons Styling */
+  .msg-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+  }
+
+  .message-bubble:hover .msg-actions {
+    opacity: 1;
+  }
+
+  .msg-actions button {
+    background: none;
+    border: none;
+    padding: 2px 4px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+  }
+
+  .msg-actions button:hover {
+    color: #000;
+  }
+
+  .msg-actions i {
+    font-size: 0.75rem; /* smaller than fa-sm */
+  }
+</style>
+
+
+<div class="chat-container">
+  <div class="chat-header">
+    💬 Career Chat Assistant
+  </div>
+
+  <div id="chat-window" class="{% if full_session|length == 0 %}empty-chat{% endif %}">
+    {% if full_session %}
+      <div class="message-container">
+        {% for message in full_session %}
+        <div class="message-row user">
+          <img src="{{ request.user.careerprofile.avatar.url|default:'/static/images/default-user.png' }}" class="avatar" alt="User Avatar">
+          <div class="message-bubble user-message">{{ message.user_message }}</div>
+        </div>
+        <div class="message-row bot">
+          <img src="/static/images/bot-avatar.png" class="avatar" alt="Bot Avatar">
+          <div class="message-bubble bot-message">{{ message.bot_reply|linebreaksbr }}</div>
+      </div>
+      {% endfor %}
+
+      </div>
+    {% else %}
+      <p class="text-muted">Start a conversation to receive career advice tailored to your profile.</p>
+    {% endif %}
+  </div>
+
+  <form id="chat-form" method="post" data-url="{% url 'chat' %}">
+    {% csrf_token %}
+    <div class="form-container">
+      <input type="text" id="chat-input" class="form-control" placeholder="Type your message..." autocomplete="off" required>
+      <button type="submit" id="send-btn" class="btn send-btn">Send</button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const chatForm = document.getElementById("chat-form");
+  const chatInput = document.getElementById("chat-input");
+  const chatWindow = document.getElementById("chat-window");
+  const chatSidebar = document.getElementById("chat-sidebar");
+  const chatTitle = document.getElementById("chat-title");
+  const sendBtn = document.getElementById("send-btn");
+
+  const chatUrl = chatForm.dataset.url;
+  let messageContainer = document.querySelector(".message-container");
+  let currentSessionId = null;
+  let isTyping = false;
+  let stopTyping = false;
+
+  const userAvatar = "{{ request.user.careerprofile.avatar.url|default:'/static/images/default-user.png' }}";
+  const botAvatar = "/static/images/bot-avatar.png";
+
+  chatForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const message = chatInput.value.trim();
+    if (!message || isTyping) return;
+
+    displayUserMessage(message);
+    chatInput.value = "";
+
+    displayTypingIndicator();
+    sendBtn.innerHTML = '<i class="fas fa-stop fa-sm"></i>';
+    sendBtn.disabled = false;
+    isTyping = true;
+    stopTyping = false;
+
+    fetch(chatUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: JSON.stringify({ message })
+    })
+    .then(response => response.json())
+    .then(data => {
+      removeTypingIndicator();
+      renderBotMessage(data.reply);
+
+      if (!currentSessionId && data.session_id) {
+        currentSessionId = data.session_id;
+
+        const newSessionItem = document.createElement("li");
+        newSessionItem.className = "chat-session-item";
+        newSessionItem.innerHTML = `<a href="/chatbot/session/${data.session_id}/">${data.session_title}</a>`;
+        if (chatSidebar) chatSidebar.prepend(newSessionItem);
+
+        document.title = data.session_title;
+        if (chatTitle) chatTitle.textContent = data.session_title;
+      }
+    })
+    .catch(error => {
+      removeTypingIndicator();
+      messageContainer.insertAdjacentHTML('beforeend', `
+        <div class="message-row bot">
+          <img src="${botAvatar}" class="avatar" alt="Bot Avatar">
+          <div class="message-bubble bot-message">⚠️ Error: ${error.message}</div>
+        </div>`);
+    })
+    .finally(() => {
+      isTyping = false;
+      stopTyping = false;
+      sendBtn.innerHTML = '<i class="fas fa-paper-plane fa-sm"></i>';
+    });
+  });
+
+  sendBtn.addEventListener("click", () => {
+    if (isTyping) {
+      stopTyping = true;
+      isTyping = false;
+      removeTypingIndicator();
+      sendBtn.innerHTML = '<i class="fas fa-paper-plane fa-sm"></i>';
+    }
+  });
+
+  function displayUserMessage(message) {
+    if (chatWindow.classList.contains('empty-chat')) {
+      chatWindow.classList.remove('empty-chat');
+      chatWindow.innerHTML = '';
+      messageContainer = document.createElement("div");
+      messageContainer.className = "message-container";
+      chatWindow.appendChild(messageContainer);
+    }
+
+    const html = `
+      <div class="message-row user" style="justify-content: flex-end;">
+        <div class="message-bubble user-message">
+          ${message}
+          <div class="msg-actions">
+            <button class="copy-btn" title="Copy"><i class="fas fa-copy fa-sm"></i></button>
+            <button class="edit-btn" title="Edit"><i class="fas fa-pen fa-sm"></i></button>
+          </div>
+        </div>
+        <img src="${userAvatar}" class="avatar" alt="User Avatar" style="margin-left: 8px;">
+      </div>`;
+    messageContainer.insertAdjacentHTML('beforeend', html);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  function displayTypingIndicator() {
+    const html = `
+      <div class="message-row bot typing-indicator-wrapper">
+        <img src="${botAvatar}" class="avatar" alt="Bot Avatar">
+        <div class="message-bubble bot-message">
+          <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+      </div>`;
+    messageContainer.insertAdjacentHTML('beforeend', html);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  function removeTypingIndicator() {
+    const lastChild = messageContainer.lastElementChild;
+    if (lastChild?.classList.contains('typing-indicator-wrapper')) {
+      lastChild.remove();
+    }
+  }
+
+  function renderBotMessage(text) {
+    const botRow = document.createElement("div");
+    botRow.className = "message-row bot";
+    botRow.innerHTML = `
+      <img src="${botAvatar}" class="avatar" alt="Bot Avatar">
+      <div class="message-bubble bot-message">
+        <div class="typing"></div>
+        <div class="msg-actions" style="display: none;">
+          <button class="copy-btn" title="Copy"><i class="fas fa-copy fa-sm"></i></button>
+          <button class="regen-btn" title="Regenerate"><i class="fas fa-sync-alt fa-sm"></i></button>
+        </div>
+      </div>`;
+    messageContainer.appendChild(botRow);
+
+    const botMsgDiv = botRow.querySelector(".typing");
+    const msgActions = botRow.querySelector(".msg-actions");
+    let index = 0;
+
+    function typeChar() {
+      if (stopTyping) return;
+      if (index < text.length) {
+        const char = text.charAt(index);
+        botMsgDiv.innerHTML += char === '\n' ? '<br>' : char;
+        index++;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        setTimeout(typeChar, 20);
+      } else {
+        botMsgDiv.classList.remove("typing");
+        msgActions.style.display = "flex";
+        isTyping = false;
+        stopTyping = false;
+        sendBtn.innerHTML = '<i class="fas fa-paper-plane fa-sm"></i>';
+        attachMessageActions();
+      }
+    }
+
+    typeChar();
+  }
+
+  function attachMessageActions() {
+    document.querySelectorAll(".copy-btn").forEach(btn => {
+      btn.onclick = () => {
+        const bubble = btn.closest(".message-bubble");
+        const text = bubble.querySelector(".typing")?.innerHTML || bubble.childNodes[0]?.textContent;
+        const temp = document.createElement("textarea");
+        temp.value = text.replace(/<br>/g, '\n').trim();
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      };
+    });
+
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+      btn.onclick = () => {
+        const row = btn.closest(".message-row");
+        const bubble = row.querySelector(".message-bubble");
+        const text = bubble.childNodes[0]?.textContent.trim();
+        chatInput.value = text;
+
+        let found = false;
+        const allRows = Array.from(messageContainer.children);
+        allRows.forEach(r => {
+          if (r === row) found = true;
+          if (found) r.remove();
+        });
+      };
+    });
+
+    document.querySelectorAll(".regen-btn").forEach(btn => {
+      btn.onclick = () => {
+        const row = btn.closest(".message-row");
+        const prevUserRow = row.previousElementSibling;
+        if (!prevUserRow?.classList.contains("user")) return;
+
+        const userText = prevUserRow.querySelector(".message-bubble").childNodes[0].textContent.trim();
+        const botBubble = row.querySelector(".message-bubble");
+        const typingDiv = botBubble.querySelector(".typing") || document.createElement("div");
+
+        typingDiv.innerHTML = `
+          <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>`;
+        botBubble.prepend(typingDiv);
+
+        fetch(chatUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+          },
+          body: JSON.stringify({ message: userText })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          typingDiv.innerHTML = "";
+          renderBotMessage(data.reply);
+        });
+      };
+    });
+  }
+});
+</script>
+
+
+{% endblock %}

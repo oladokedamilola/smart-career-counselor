@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="mb-4">Step 3 of 3: Career Goals & Avatar 🌟</h3>
+
+          {{ block.super }}
+          {% include 'users/partials/_onboarding_progress.html' with progress=66 step=2 %}
+
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="mb-3">
+                {{ field.label_tag }} {{ field }}
+                {% if field.help_text %}
+                  <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% if field.errors %}
+                  <div class="text-danger small">{{ field.errors.0 }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+            <a href="?step=2" class="btn btn-secondary">Back</a>
+            <button class="btn btn-success" type="submit">Finish & Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

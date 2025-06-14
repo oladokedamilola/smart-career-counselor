@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  .card-title {
+  font-family: 'Poppins', sans-serif;
+}
+
+textarea {
+  resize: vertical;
+}
+
+</style>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body p-4">
+          <h2 class="card-title mb-4 text-center">🧭 Complete Your Career Profile</h2>
+          <form method="POST" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="mb-3">
+                <label class="form-label fw-semibold">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                  <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">
+                ✅ Submit Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

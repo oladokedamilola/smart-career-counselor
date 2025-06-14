@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<style>
+  .text-success {
+  color: green !important;
+}
+
+.text-danger {
+  color: red !important;
+}
+ input {
+    transition: border-color 0.3s ease;
+  }
+
+</style>
+  {% if messages %}
+    <div class="mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+  <div class="card shadow p-4" style="max-width: 600px; width: 100%; border-radius: 1rem;">
+    <h3 class="text-center mb-4">Create Your Account</h3>
+
+<form method="POST" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+
+  <fieldset class="mb-4">
+    <legend class="fs-5">Account Information</legend>
+
+    <!-- Email -->
+    <div class="mb-3">
+      {{ user_form.email.label_tag }}
+      {{ user_form.email }}
+      {% if user_form.email.errors %}
+        <div class="text-danger small">{{ user_form.email.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <!-- Password1 -->
+    <div class="mb-3">
+      {{ user_form.password1.label_tag }}
+      <div class="position-relative">
+        {{ user_form.password1 }}
+        <span class="toggle-password" style="position: absolute; top: 50%; transform: translateY(-50%); right: 11px; cursor: pointer;">👁️</span>
+      </div>
+      <div class="text-danger small" style="min-height: 1.2em;">
+        {% if user_form.password1.errors %}
+          {{ user_form.password1.errors.0 }}
+        {% endif %}
+      </div>
+
+      <!-- Password requirements -->
+      <ul id="password-requirements" class="list-unstyled mt-2 small">
+        <li id="pw-length" class="text-danger">❌ At least 8 characters</li>
+        <li id="pw-uppercase" class="text-danger">❌ At least one uppercase letter</li>
+        <li id="pw-lowercase" class="text-danger">❌ At least one lowercase letter</li>
+        <li id="pw-number" class="text-danger">❌ At least one number</li>
+        <li id="pw-symbol" class="text-danger">❌ At least one special character</li>
+      </ul>
+    </div>
+
+    <!-- Password2 -->
+    <div class="mb-3">
+      {{ user_form.password2.label_tag }}
+      <div class="position-relative">
+        {{ user_form.password2 }}
+        <span class="toggle-password" style="position: absolute; top: 50%; transform: translateY(-50%); right: 11px; cursor: pointer;">👁️</span>
+      </div>
+      <div class="text-danger small" style="min-height: 1.2em;">
+        {% if user_form.password2.errors %}
+          {{ user_form.password2.errors.0 }}
+        {% endif %}
+      </div>
+    </div>
+
+  </fieldset>
+
+  <div class="d-flex justify-content-center">
+    <button type="submit" class="btn btn-success" style="width: 200px;">Register</button>
+  </div>
+
+  <div class="text-center mt-3">
+    <p class="mb-0">Already have an account? <a href="{% url 'login' %}">Sign in here</a></p>
+  </div>
+</form>
+
+<!-- Scripts (unchanged) -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-password").forEach(toggle => {
+      toggle.addEventListener("click", function () {
+        const input = this.previousElementSibling;
+        if (input.type === "password") {
+          input.type = "text";
+          this.textContent = "🙈";
+        } else {
+          input.type = "password";
+          this.textContent = "👁️";
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById("id_password1");
+    const requirements = {
+      length: document.getElementById("pw-length"),
+      uppercase: document.getElementById("pw-uppercase"),
+      lowercase: document.getElementById("pw-lowercase"),
+      number: document.getElementById("pw-number"),
+      symbol: document.getElementById("pw-symbol"),
+    };
+
+    passwordInput.addEventListener("input", function () {
+      const val = passwordInput.value;
+
+      requirements.length.className = val.length >= 8 ? "text-success" : "text-danger";
+      requirements.length.textContent = (val.length >= 8 ? "✅" : "❌") + " At least 8 characters";
+
+      requirements.uppercase.className = /[A-Z]/.test(val) ? "text-success" : "text-danger";
+      requirements.uppercase.textContent = (/[A-Z]/.test(val) ? "✅" : "❌") + " At least one uppercase letter";
+
+      requirements.lowercase.className = /[a-z]/.test(val) ? "text-success" : "text-danger";
+      requirements.lowercase.textContent = (/[a-z]/.test(val) ? "✅" : "❌") + " At least one lowercase letter";
+
+      requirements.number.className = /\d/.test(val) ? "text-success" : "text-danger";
+      requirements.number.textContent = (/\d/.test(val) ? "✅" : "❌") + " At least one number";
+
+      requirements.symbol.className = /[\W_]/.test(val) ? "text-success" : "text-danger";
+      requirements.symbol.textContent = (/[\W_]/.test(val) ? "✅" : "❌") + " At least one special character";
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const pw1 = document.getElementById("id_password1");
+    const pw2 = document.getElementById("id_password2");
+
+    function validateConfirmPassword() {
+      if (!pw2.value) {
+        pw2.style.borderColor = "";
+      } else if (pw1.value === pw2.value) {
+        pw2.style.borderColor = "green";
+      } else {
+        pw2.style.borderColor = "red";
+      }
+    }
+
+    pw1.addEventListener("input", validateConfirmPassword);
+    pw2.addEventListener("input", validateConfirmPassword);
+  });
+</script>
+
+
+
+{% endblock %}

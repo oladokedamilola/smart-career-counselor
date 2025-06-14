@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>🚨 Incomplete Profile Access Log Dashboard</h2>
+
+<h4>Top Attempted Paths</h4>
+<ul>
+  {% for path in top_paths %}
+    <li><strong>{{ path.attempted_path }}</strong>: {{ path.times }} attempts</li>
+  {% endfor %}
+</ul>
+
+<h4>Top Users by Attempts</h4>
+<ul>
+  {% for user in top_users %}
+    <li><strong>{{ user.user__username }}</strong>: {{ user.attempts }} attempts</li>
+  {% endfor %}
+</ul>
+
+<h4>Recent Attempts</h4>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Path</th>
+      <th>IP Address</th>
+      <th>User Agent</th>
+      <th>Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+    <tr>
+      <td>{{ log.user.username }}</td>
+      <td>{{ log.attempted_path }}</td>
+      <td>{{ log.ip_address }}</td>
+      <td>{{ log.user_agent|truncatechars:60 }}</td>
+      <td>{{ log.timestamp }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

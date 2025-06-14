@@ -1,0 +1,187 @@
+<!-- templates/sidebar.html -->
+{% load static %}
+<style>
+  .chat-session-label {
+  position: relative;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-link {
+  flex: 1;
+  text-decoration: none;
+  color: black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.options-button {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1rem;
+  display: none;
+  cursor: pointer;
+}
+
+.chat-session-label:hover .options-button {
+  display: inline;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 2.2rem;
+  background: #222;
+  padding: 0.5rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  z-index: 10;
+}
+
+.chat-session-label:hover .dropdown-menu {
+  display: block;
+}
+
+.chat-group {
+  margin-bottom: 1rem;
+}
+
+.group-label {
+  font-size: 0.75rem;
+  color: #aaa;
+  text-transform: uppercase;
+  margin: 0.5rem 0;
+}
+
+</style>
+<aside class="sidebar{% if sidebar_collapsed %} collapsed{% endif %}{% if menu_active %} menu-active{% endif %}">
+  <!-- Sidebar Header -->
+  <header class="sidebar-header">
+    <a href="#" class="header-logo">
+      <img src="{% static 'images/fav.png' %}" alt="Logo">
+    </a>
+    <button class="toggler sidebar-toggler" aria-label="Toggle Sidebar">
+      <span class="material-symbols-rounded">chevron_left</span>
+    </button>
+    <button class="toggler menu-toggler" aria-label="Toggle Menu">
+      <span class="material-symbols-rounded">menu</span>
+    </button>
+  </header>
+
+  <nav class="sidebar-nav">
+    <!-- Always-visible Primary Nav -->
+    <ul class="nav-list primary-nav">
+      <li class="nav-item">
+        <a href="{% url 'dashboard' %}" class="nav-link">
+          <span class="nav-icon material-symbols-rounded">dashboard</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <span class="nav-tooltip">Dashboard</span>
+      </li>
+
+      <li class="nav-item">
+        <a href="#" class="nav-link">
+          <span class="nav-icon material-symbols-rounded">notifications</span>
+          <span class="nav-label">Notifications</span>
+        </a>
+        <span class="nav-tooltip">Notifications</span>
+      </li>
+    </ul>
+
+    {% if sidebar_mode == "chat" %}
+      <div class="sidebar-chat-history">
+            <a href="{% url 'start_new_chat' %}" class="nav-link">
+              <span class="nav-icon">💬</span>
+              <span class="nav-label">New Chat</span>
+            </a>
+        <h5 class="chat-history-title">Your Chats</h5>
+
+        {% if grouped_sessions %}
+          {% for label, sessions in grouped_sessions.items %}
+            {% if sessions %}
+              <div class="chat-group">
+                <div class="group-label">{{ label }}</div>
+                {% for session in sessions %}
+                  <div class="chat-session-label d-flex justify-between align-items-center{% if session.id|stringformat:"s" == current_session %} active-session{% endif %}">
+                    <a href="{% url 'load_session' session_id=session.id %}" class="chat-link">
+                      {{ session.title|default:"Untitled" }}
+                    </a>
+
+                    <div class="dropdown chat-options">
+                      <button class="options-button" title="More">
+                        <i class="fas fa-ellipsis-v"></i>
+                      </button>
+                      <div class="dropdown-menu">
+                        <form method="post" action="{% url 'rename_session' session_id=session.id %}">
+                          {% csrf_token %}
+                          <input name="title" value="{{ session.title }}" class="form-control form-control-sm mb-1" />
+                          <button type="submit" class="dropdown-item text-primary">
+                            <i class="fas fa-edit"></i> Rename
+                          </button>
+                        </form>
+                        <form method="post" action="{% url 'delete_session' session_id=session.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="dropdown-item text-danger">
+                            <i class="fas fa-trash-alt"></i> Delete
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <p class="no-chats">No chat sessions found.</p>
+        {% endif %}
+      </div>
+    {% else %}
+      <!-- Quick Links -->
+      <div class="sidebar-quick-links">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="{% url 'edit_profile' %}" class="nav-link">
+              <span class="nav-icon">📝</span>
+              <span class="nav-label">Edit Profile</span>
+            </a>
+            <span class="nav-tooltip">Edit Profile</span>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'start_new_chat' %}" class="nav-link">
+              <span class="nav-icon">💬</span>
+              <span class="nav-label">Open Chatbot</span>
+            </a>
+            <span class="nav-tooltip">Chatbot</span>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+
+    <!-- Always-visible Secondary Nav -->
+    <ul class="nav-list secondary-nav">
+      <li class="nav-item">
+        <a href="{% url 'edit_profile' %}" class="nav-link">
+          <span class="nav-icon material-symbols-rounded">account_circle</span>
+          <span class="nav-label">Profile</span>
+        </a>
+        <span class="nav-tooltip">Profile</span>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'logout' %}" class="nav-link">
+          <span class="nav-icon material-symbols-rounded">logout</span>
+          <span class="nav-label">Logout</span>
+        </a>
+        <span class="nav-tooltip">Logout</span>
+      </li>
+    </ul>
+  </nav>
+</aside>
+
+<script src="{% static 'js/sidebar.js' %}"></script>
+

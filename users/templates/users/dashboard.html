@@ -1,0 +1,120 @@
+{% extends 'layout.html' %}
+{% block body_class %}has-sidebar{% endblock %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+  {% include 'sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<style>
+  .card {
+    border-radius: 12px;
+    padding: 1rem;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+    cursor: default;
+    background-color: #fff;
+  }
+  .card:hover {
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-6px);
+    background-color: #f9fbff;
+  }
+  .card-header {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #2a4d9b;
+    background-color: #ffffff;
+    border-bottom: 2px solid #4a90e2;
+    border-radius: 12px 12px 0 0;
+    padding: 0.75rem 1rem;
+  }
+  .card-body p {
+    font-size: 1rem;
+    color: #3a3a3a;
+    line-height: 1.5;
+  }
+  .card-body p strong {
+    color: #1a2d6b;
+  }
+  .btn-primary {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .btn-primary:hover {
+    background-color: #357ab8;
+    border-color: #357ab8;
+    box-shadow: 0 6px 12px rgba(53, 122, 184, 0.5);
+  }
+
+  .container-fluid {
+    margin-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .col-md-3, .col-md-9 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .col-md-9 {
+    padding-left: 1rem;
+    padding-right: 1.5rem;
+  }
+  .col-md-3 {
+    position: sticky;
+    top: 1rem;
+    height: calc(100vh - 1rem);
+    overflow-y: auto;
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Dashboard Content -->
+    <div class="col-md-12">
+      <div class="mb-4">
+        <h2 class="fw-semibold text-primary">👋 Welcome back, {{ user.first_name }}!</h2>
+      </div>
+
+      {% if not profile_complete %}
+        <div class="alert alert-warning shadow-sm rounded">
+          <strong>Heads up!</strong> Your profile is incomplete. 
+          <a href="{% url 'edit_profile' %}" class="alert-link">Complete it now</a> to get accurate career suggestions.
+        </div>
+      {% endif %}
+
+      <!-- Career Profile Card -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header">🎓 Your Career Profile</div>
+        <div class="card-body">
+          <p class="mb-2"><strong>Education:</strong> {{ profile.highest_education }}</p>
+          <p class="mb-2"><strong>Skills:</strong> {{ profile.skills }}</p>
+          <p class="mb-0"><strong>Interests:</strong> {{ profile.interests }}</p>
+        </div>
+      </div>
+
+      <!-- Career Coach Info Card -->
+<div class="card shadow-sm mb-4 border-0">
+  <div class="card-header">🤖 Smart Career Coach</div>
+  <div class="card-body">
+    <p class="mb-0">
+      💬 Chat with our intelligent career coach to get personalized career guidance and recommendations tailored to your goals. Start your journey now!
+    </p>
+  </div>
+</div>
+
+<!-- CTA Button -->
+<a href="{% url 'start_new_chat' %}" class="btn btn-primary btn-lg px-4">
+  🧠 Start Chatting with the AI Coach
+</a>
+
+  </div>
+</div>
+{% endblock %}

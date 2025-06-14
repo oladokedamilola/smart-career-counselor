@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(#F1FAFF, #CBE4FF);
+}
+
+.material-symbols-rounded {
+  font-size: 20px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.navbar-nav .nav-link {
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  /* Light blue bg on hover */
+  color: #007bff;
+  /* Bootstrap primary color */
+  border-radius: 0.25rem;
+}

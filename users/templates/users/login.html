@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow p-4" style="max-width: 400px; width: 100%; border-radius: 1rem;">
+    <h3 class="text-center mb-4">Sign In to Your Account</h3>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      
+      <div class="mb-3">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="text-danger small">{{ form.username.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3 position-relative">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        <span class="toggle-password" style="position: absolute; top: 70%; right: 11px; cursor: pointer; user-select:none; transform: translateY(-50%)">👁️</span>
+        {% if form.password.errors %}
+          <div class="text-danger small">{{ form.password.errors.0 }}</div>
+        {% endif %}
+      </div>
+
+      <div class="d-flex justify-content-center">
+  <button type="submit" class="btn btn-success" style="width: 200px;">Register</button>
+</div>
+    </form>
+
+    <div class="text-center mt-3">
+      <p class="mb-0">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-password").forEach(toggle => {
+      toggle.addEventListener("click", function () {
+        const input = this.previousElementSibling;
+        if (input.type === "password") {
+          input.type = "text";
+          this.textContent = "🙈";
+        } else {
+          input.type = "password";
+          this.textContent = "👁️";
+        }
+      });
+    });
+  });
+</script>
+
+{% endblock %}

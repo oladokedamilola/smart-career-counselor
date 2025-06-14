@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+  <div class="card shadow-sm" style="max-width: 700px; width: 100%;">
+    <div class="card-body">
+      <h3 class="mb-4">Step 2 of 3: Background & Interests 📚</h3>
+
+      {% include 'users/partials/_onboarding_progress.html' with progress=66 step=2 %}
+
+      <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <!-- Academic Background -->
+        <div class="mb-4">
+          {{ form.academic_background.label_tag }}
+          {{ form.academic_background }}
+          {% if form.academic_background.errors %}
+            <div class="text-danger">{{ form.academic_background.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Career Interests -->
+        <div class="mb-3">
+          <label><strong>Career Interests</strong></label>
+          <div class="row">
+            {% for value, label in form.interests.field.choices %}
+              <div class="col-md-4 mb-2">
+                <button type="button" 
+                        class="btn btn-outline-primary w-100 interest-btn" 
+                        data-value="{{ value }}">
+                  {{ label }}
+                </button>
+              </div>
+            {% endfor %}
+          </div>
+          {% if form.interests.errors %}
+            <div class="text-danger">{{ form.interests.errors }}</div>
+          {% endif %}
+          <input type="hidden" name="interests" id="selected-interests" value="{{ form.data.interests|default_if_none:'' }}">
+        </div>
+
+        <!-- Skills -->
+        <div class="mb-3">
+          <label><strong>Skills (max 7)</strong></label>
+          <div class="row">
+            {% for value, label in form.skills.field.choices %}
+              <div class="col-md-4 mb-2">
+                <button type="button" 
+                        class="btn btn-outline-success w-100 skill-btn" 
+                        data-value="{{ value }}">
+                  {{ label }}
+                </button>
+              </div>
+            {% endfor %}
+          </div>
+          {% if form.skills.errors %}
+            <div class="text-danger">{{ form.skills.errors }}</div>
+          {% endif %}
+
+          <!-- Tag container -->
+          <div id="skills-tags" class="mt-3"></div>
+
+          <input type="hidden" name="skills" id="selected-skills" value="{{ form.data.skills|default_if_none:'' }}">
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <a href="?step=1" class="btn btn-secondary">Back</a>
+          <button type="submit" class="btn btn-primary">Next</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initialize selected interests and skills from hidden inputs
+  const selectedInterests = new Set((document.getElementById('selected-interests').value || '').split(',').filter(Boolean));
+  const selectedSkills = new Set((document.getElementById('selected-skills').value || '').split(',').filter(Boolean));
+
+  // Interests buttons toggle
+  const interestButtons = document.querySelectorAll('.interest-btn');
+  const interestsInput = document.getElementById('selected-interests');
+
+  interestButtons.forEach(btn => {
+    const val = btn.getAttribute('data-value');
+
+    // If pre-selected, add icon and styles
+    if (selectedInterests.has(val)) {
+      btn.classList.remove('btn-outline-primary');
+      btn.classList.add('btn-success');
+      addCheckIcon(btn);
+    }
+
+    btn.addEventListener('click', () => {
+      if (selectedInterests.has(val)) {
+        selectedInterests.delete(val);
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-outline-primary');
+        removeCheckIcon(btn);
+      } else {
+        selectedInterests.add(val);
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-success');
+        addCheckIcon(btn);
+      }
+      interestsInput.value = Array.from(selectedInterests).join(',');
+    });
+  });
+
+  // Skills buttons and tags
+  const skillButtons = document.querySelectorAll('.skill-btn');
+  const skillsInput = document.getElementById('selected-skills');
+  const skillsTagsContainer = document.getElementById('skills-tags');
+  const maxSkills = 7;
+
+  // Helper to add check icon to a button (if not present)
+  function addCheckIcon(button) {
+    if (!button.querySelector('i.bi-check-lg')) {
+      const icon = document.createElement('i');
+      icon.className = 'bi bi-check-lg ms-2';  // Bootstrap icon with margin
+      button.appendChild(icon);
+    }
+  }
+
+  // Helper to remove check icon from a button
+  function removeCheckIcon(button) {
+    const icon = button.querySelector('i.bi-check-lg');
+    if (icon) icon.remove();
+  }
+
+  // Helper to create skill tag with remove button
+  function createTag(label, value) {
+    const tag = document.createElement('span');
+    tag.className = 'badge bg-success me-2 mb-2';
+    tag.style.cursor = 'default';
+    tag.textContent = label;
+
+    const closeBtn = document.createElement('span');
+    closeBtn.innerHTML = ' &times;';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.classList.add('ms-1');
+
+    closeBtn.addEventListener('click', () => {
+      skillsTagsContainer.removeChild(tag);
+      selectedSkills.delete(value);
+      skillsInput.value = Array.from(selectedSkills).join(',');
+
+      // Enable the corresponding button and remove icon
+      skillButtons.forEach(button => {
+        if (button.getAttribute('data-value') === value) {
+          button.disabled = false;
+          button.classList.remove('btn-secondary');
+          button.classList.add('btn-outline-success');
+          removeCheckIcon(button);
+        }
+      });
+    });
+
+    tag.appendChild(closeBtn);
+    return tag;
+  }
+
+  // Initialize skills tags and disable buttons for already selected
+  skillButtons.forEach(btn => {
+    const val = btn.getAttribute('data-value');
+    const label = btn.textContent.trim();
+
+    if (selectedSkills.has(val)) {
+      btn.disabled = true;
+      btn.classList.remove('btn-outline-success');
+      btn.classList.add('btn-secondary');
+      addCheckIcon(btn);
+      skillsTagsContainer.appendChild(createTag(label, val));
+    }
+
+    btn.addEventListener('click', () => {
+      if (selectedSkills.size >= maxSkills) {
+        alert(`You can select up to ${maxSkills} skills only.`);
+        return;
+      }
+      if (!selectedSkills.has(val)) {
+        selectedSkills.add(val);
+        skillsInput.value = Array.from(selectedSkills).join(',');
+
+        btn.disabled = true;
+        btn.classList.remove('btn-outline-success');
+        btn.classList.add('btn-secondary');
+        addCheckIcon(btn);
+
+        skillsTagsContainer.appendChild(createTag(label, val));
+      }
+    });
+  });
+</script>
+
+{% endblock %}

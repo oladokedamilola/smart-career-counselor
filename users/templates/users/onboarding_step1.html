@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">  {# Adjust width here (md: medium screens, lg: large screens) #}
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="mb-4">Step 1 of 3: Education Info 🎓</h3>
+
+          {% include 'users/partials/_onboarding_progress.html' with progress=33 step=1 %}
+
+          <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="mb-3">
+                {{ field.label_tag }} {{ field }}
+                {% if field.errors %}
+                  <div class="text-danger small">{{ field.errors.0 }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+            <button class="btn btn-primary" type="submit">Next</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

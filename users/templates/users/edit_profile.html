@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow p-4" style="max-width: 400px; width: 100%; border-radius: 1rem;">
+    <h3 class="text-center mb-4">Edit Your Profile</h3>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      {% for field in form %}
+        <div class="mb-3">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary" style="width: 200px;">Save Changes</button>
+      </div>
+    </form>
+
+    <div class="text-center mt-3">
+      <a href="{% url 'dashboard' %}" class="text-decoration-none">← Back to Profile</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

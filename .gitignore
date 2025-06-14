@@ -1,0 +1,72 @@
+# Python __pycache__ and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.pip/
+
+# Django migrations
+**/migrations/
+!**/migrations/__init__.py
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Media and uploaded files
+/media/
+/staticfiles/
+/static_root/
+/media_root/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+*.env
+.env.*
+
+# Coverage, test and debug files
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+*.log
+*.pot
+
+# Node.js (if you’re using npm for frontend assets)
+node_modules/
+
+# Compiled files
+*.mo
+*.pot
+
+# Git itself
+*.orig
+
+# PyInstaller
+*.spec
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# MyPy
+.mypy_cache/
+
+# Cache files
+.cache/
