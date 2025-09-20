@@ -1,13 +1,3 @@
-Here’s an updated version of your **README** with the adjustments you wanted:
-
-* Replaced the generic AI/NLP stack with **GitHub Azure OpenAI API** (since that’s what you actually used).
-* Added **deployment on PythonAnywhere**.
-* Added a **placeholder for the live website link**.
-* Kept it professional, structured, and recruiter-friendly.
-
----
-
-````markdown
 # 🎓 AI-Powered Chatbot for Career Guidance
 
 Welcome to the official repository for the **AI-powered career guidance chatbot**, built with **Django** (Python) for the backend and **HTML/CSS/JavaScript** for the frontend. This project aims to democratize access to high-quality career advice using artificial intelligence, machine learning, and natural language processing (NLP).
