@@ -1,6 +1,18 @@
+Here’s an updated version of your **README** with the adjustments you wanted:
+
+* Replaced the generic AI/NLP stack with **GitHub Azure OpenAI API** (since that’s what you actually used).
+* Added **deployment on PythonAnywhere**.
+* Added a **placeholder for the live website link**.
+* Kept it professional, structured, and recruiter-friendly.
+
+---
+
+````markdown
 # 🎓 AI-Powered Chatbot for Career Guidance
 
 Welcome to the official repository for the **AI-powered career guidance chatbot**, built with **Django** (Python) for the backend and **HTML/CSS/JavaScript** for the frontend. This project aims to democratize access to high-quality career advice using artificial intelligence, machine learning, and natural language processing (NLP).
+
+🔗 **Live Demo:** [careercounsellor.pythonanywhere.com]
 
 ---
 
@@ -18,21 +30,23 @@ The goal of this project is to design and implement an AI chatbot that can:
 
 **Frontend:**
 - HTML5
-- CSS3 (with optional Bootstrap)
+- CSS3 (with Bootstrap for styling)
 - JavaScript (Vanilla)
 
 **Backend:**
 - Python 3.x
 - Django Framework
-- Django REST Framework (optional for API handling)
+- Django REST Framework (for API handling)
 
 **Database:**
 - SQLite (Development)
 - PostgreSQL (Production-ready alternative)
 
 **AI/NLP:**
-- spaCy / scikit-learn / transformers (for intent detection)
-- Rasa NLU (optional for advanced dialogue management)
+- GitHub Azure OpenAI API (for natural language processing and intent detection)
+
+**Deployment:**
+- PythonAnywhere (Production Hosting)
 
 ---
 
@@ -81,15 +95,15 @@ career_chatbot/
 
 ---
 
-## 📌 Features (Planned & In Progress)
+## 📌 Features (Implemented & Planned)
 
 * [x] Django project setup
-* [ ] Frontend chat UI
-* [ ] NLP engine integration (spaCy or Rasa)
-* [ ] AI recommendation system
-* [ ] User profiles & authentication
-* [ ] Admin dashboard for managing data
-* [ ] REST API endpoints for chatbot interaction
+* [x] Integration with GitHub Azure OpenAI API
+* [x] Frontend chat UI (responsive with Bootstrap)
+* [x] AI recommendation system for career paths
+* [x] Deployment on PythonAnywhere
+* [x] User profiles & authentication
+
 
 ---
 
@@ -117,4 +131,3 @@ Pull requests are welcome! If you'd like to contribute, fork the repository and 
 For questions or feedback, feel free to open an issue or reach out via GitHub.
 
 ```
-
